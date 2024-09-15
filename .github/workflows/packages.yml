@@ -20,6 +20,8 @@ on:
   push:
     branches:
     - main
+    - dev
+    - 'dev/**'
     paths:
     - 'tur-pypi-*/**'
   pull_request:
@@ -217,7 +219,7 @@ jobs:
         name: wheels-${{ matrix.target_arch }}-${{ github.sha }}
         path: ./artifacts
     - name: Upload to GitHub Release
-      if: github.event_name != 'pull_request'
+      if: github.event_name != 'pull_request' && github.ref != 'refs/heads/dev' && !startsWith(github.ref, 'refs/heads/dev/')
       run: | 
           shopt -s nullglob
           for i in ./output/*.whl; do
@@ -227,7 +229,7 @@ jobs:
 
   trigeer:
     runs-on: ubuntu-22.04
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && github.ref != 'refs/heads/dev' && !startsWith(github.ref, 'refs/heads/dev/')
     needs: build
     steps:
     - name: Trigger pages generation
